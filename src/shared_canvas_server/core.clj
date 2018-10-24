@@ -12,7 +12,7 @@
                                        (send! channel data))))))
 
 (defroutes app
-  (GET "/" [] "Hello from Compojure!")
+  (GET "/" [] "Web server running.")
   (GET "/ws" [] message-handler)
   (not-found "Not found"))
 
