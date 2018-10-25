@@ -1,3 +1,3 @@
-# shared-canvas-server
+# shared-canvas
 
-The server for handling shared canvas messages.
+An application that allows multiple users to draw on the same canvas.
