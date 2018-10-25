@@ -18,7 +18,7 @@
     console.log('Error:', event);
   }
 
-  const websocket = new WebSocket("ws://localhost:8000/ws");
+  const websocket = new WebSocket(`ws://${window.location.host}/ws`);
   websocket.onopen = onOpen;
   websocket.onclose = onClose;
   websocket.onmessage = onMessage;
@@ -26,7 +26,7 @@
 
   //// Get the canvas element and context
 
-  const canvas = document.getElementById('board');
+  const canvas = document.getElementById('canvas');
   const canvasContext = canvas.getContext('2d');
   
   //// Initialize context
