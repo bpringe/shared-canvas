@@ -1,3 +1,3 @@
-# Introduction to shared-canvas-server
+# Introduction to shared-canvas
 
 TODO: write [great documentation](http://jacobian.org/writing/what-to-write/)

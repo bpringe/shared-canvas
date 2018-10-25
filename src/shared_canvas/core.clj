@@ -1,4 +1,4 @@
-(ns shared-canvas-server.core
+(ns shared-canvas.core
   (:gen-class)
   (:require [org.httpkit.server :refer :all]
             [compojure.core :refer [GET defroutes]]

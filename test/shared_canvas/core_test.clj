@@ -1,6 +1,6 @@
-(ns shared-canvas-server.core-test
+(ns shared-canvas.core-test
   (:require [clojure.test :refer :all]
-            [shared-canvas-server.core :refer :all]))
+            [shared-canvas.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

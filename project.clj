@@ -1,4 +1,4 @@
-(defproject shared-canvas-server "0.1.0-SNAPSHOT"
+(defproject shared-canvas "0.1.0-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -8,6 +8,6 @@
                  [http-kit "2.3.0"]
                  [org.clojure/data.json "0.2.6"]
                  [environ "1.1.0"]]
-  :main ^:skip-aot shared-canvas-server.core
+  :main ^:skip-aot shared-canvas.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

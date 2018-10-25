@@ -35,10 +35,11 @@
 
   //// Configuration
 
-  const clickEvent = null;
-  const mouseMoveEvent = null;
   const drawWidth = 50;
   const drawHeight = 50;
+
+  //// State
+
   var mouseDown = false;
 
   //// Utility functions
