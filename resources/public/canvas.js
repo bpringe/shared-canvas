@@ -11,9 +11,15 @@
   }
 
   function onMessage(event) {
-    const data = JSON.parse(event.data);
-    console.log('Received message:', data);
-
+    const message = JSON.parse(event.data);
+    console.log('Received message:', message);
+    if (message.constructor === Array) {
+      message.forEach(drawEvent => {
+        drawRectangle(canvasContext, drawEvent);
+      });
+    } else if (message.constructor === Object) {
+      drawRectangle(canvasContext, message);
+    }
   }
 
   function onError(event) {

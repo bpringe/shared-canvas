@@ -16,21 +16,25 @@
 ;;;; State
 
 (defonce canvas-events (atom []))
+(defonce channels (atom {}))
 
 ;;;; Handlers
 
 (defn handle-message
   [message]
   (println "Received:" message)
-  (swap! canvas-events conj (json/read-str message)))
+  (swap! canvas-events conj (json/read-str message))
+  (doseq [channel (keys @channels)]
+    (send! channel message)))
 
 (defn websocket-handler
   [request]
   (with-channel request channel
     (println "New user connected")
+    (swap! channels assoc channel request)
     (println "Sending canvas events")
     (send! channel (json/write-str @canvas-events))
-    (on-close channel (fn [status] (println "channel closed:" status)))
+    (on-close channel (fn [status] (swap! channels dissoc channel)))
     (on-receive channel handle-message)))
 
 ;;;; Middleware
