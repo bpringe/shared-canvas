@@ -32,16 +32,15 @@
 (defn wrap-root-to-index
   [handler]
   (fn [request]
-    (println "running wrap-root-to-index")
     (handler (update-in request [:uri]
-               #(do (println %) (if (= "/" %) "/index.html" %))))))
+               #(if (= "/" %) "/index.html" %)))))
 
 (def app
   (-> routes
-      (wrap-root-to-index)
       (wrap-resource "public")
       (wrap-content-type)
-      (wrap-not-modified)))
+      (wrap-not-modified)
+      (wrap-root-to-index)))
 
 ;;;; Server
 
