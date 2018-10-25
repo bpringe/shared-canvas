@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.6.1"]
                  [http-kit "2.3.0"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [environ "1.1.0"]]
   :main ^:skip-aot shared-canvas-server.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

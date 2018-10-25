@@ -7,9 +7,17 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
-            [ring.util.response :as resp]))  
+            [environ.core :refer [env]])) 
+
+;;;; Configuration
+
+(defonce port (-> (or (env :port) "8000") Integer/parseInt))
+
+;;;; State
 
 (defonce canvas-events (atom []))
+
+;;;; Handlers
 
 (defn handle-message
   [message]
@@ -25,15 +33,19 @@
     (on-close channel (fn [status] (println "channel closed:" status)))
     (on-receive channel handle-message)))
 
-(defroutes routes
-  (GET "/ws" [] websocket-handler)
-  (not-found "Not found"))
+;;;; Middleware
 
 (defn wrap-root-to-index
   [handler]
   (fn [request]
     (handler (update-in request [:uri]
-               #(if (= "/" %) "/index.html" %)))))
+                #(if (= "/" %) "/index.html" %)))))
+
+;;;; Routes
+
+(defroutes routes
+  (GET "/ws" [] websocket-handler)
+  (not-found "Not found"))
 
 (def app
   (-> routes
@@ -57,5 +69,5 @@
 
 (defn -main
   [& args]
-  (start-server 8000)
+  (start-server port)
   (println "Server running on port 8000"))
