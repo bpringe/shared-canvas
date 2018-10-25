@@ -11,7 +11,9 @@
   }
 
   function onMessage(event) {
-    console.log('Received message:', JSON.parse(event.data));
+    const data = JSON.parse(event.data);
+    console.log('Received message:', data);
+
   }
 
   function onError(event) {
@@ -28,19 +30,17 @@
 
   const canvas = document.getElementById('canvas');
   const canvasContext = canvas.getContext('2d');
-  
-  //// Initialize context
-
-  canvasContext.fillStyle = 'rgba(0, 0, 200, 0.5)';
-
-  //// Configuration
-
-  const drawWidth = 50;
-  const drawHeight = 50;
 
   //// State
 
-  var mouseDown = false;
+  let mouseDown = false;
+  let drawWidth = 50;
+  let drawHeight = 50;
+  let fillStyle = 'rgba(0, 0, 200, 0.5)';
+
+  //// Initialize context
+
+  canvasContext.fillStyle = fillStyle;
 
   //// Utility functions
 
@@ -52,24 +52,28 @@
     };
   }
 
-  function drawRectangle(ctx, mousePosition, width, height) {
+  function drawRectangle(ctx, drawEvent) {
     console.log('drawing rectangle');
-    const x = mousePosition.x - (width / 2);
-    const y = mousePosition.y - (height / 2);
-    ctx.fillRect(x, y, width, height);
-    websocket.send(JSON.stringify({
-      x,
-      y,
-      width,
-      height,
-      fillStyle: ctx.fillStyle
-    }));
+    ctx.fillStyle = drawEvent.fillStyle;
+    ctx.fillRect(drawEvent.x, drawEvent.y, drawEvent.width, drawEvent.height);
+  }
+
+  function createDrawEvent(mousePosition) {
+    return {
+      x: mousePosition.x - (drawWidth / 2),
+      y: mousePosition.y - (drawHeight / 2),
+      width: drawWidth,
+      height: drawHeight,
+      fillStyle
+    };
   }
 
   //// Event listeners
 
   canvas.addEventListener('click', function (event) {
-    drawRectangle(canvasContext, getMousePosition(canvas, event), drawWidth, drawHeight);
+    const drawEvent = createDrawEvent(getMousePosition(canvas, event));
+    drawRectangle(canvasContext, drawEvent);
+    websocket.send(JSON.stringify(drawEvent));
   });
 
   canvas.addEventListener('mousedown', function (event) {
@@ -80,11 +84,13 @@
     mouseDown = false;
   });
 
-  canvas.addEventListener('mousemove', function(event) {
+  canvas.addEventListener('mousemove', function (event) {
     if (mouseDown) {
-      drawRectangle(canvasContext, getMousePosition(canvas, event), drawWidth, drawHeight);
+      const drawEvent = createDrawEvent(getMousePosition(canvas, event));
+      drawRectangle(canvasContext, drawEvent);
+      websocket.send(JSON.stringify(drawEvent));
     }
-  });  
+  });
 })();
 
 
