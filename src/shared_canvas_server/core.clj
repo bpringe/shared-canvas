@@ -1,9 +1,13 @@
 (ns shared-canvas-server.core
   (:gen-class)
-  (:require [org.httpkit.server :refer [with-channel run-server on-close on-receive send!]]
+  (:require [org.httpkit.server :refer :all]
             [compojure.core :refer [GET defroutes]]
             [compojure.route :refer [not-found]]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.content-type :refer [wrap-content-type]]
+            [ring.middleware.not-modified :refer [wrap-not-modified]]
+            [ring.util.response :as resp]))  
 
 (defonce canvas-events (atom []))
 
@@ -21,10 +25,23 @@
     (on-close channel (fn [status] (println "channel closed:" status)))
     (on-receive channel handle-message)))
 
-(defroutes app
-  (GET "/" [] "Web server running.")
+(defroutes routes
   (GET "/ws" [] websocket-handler)
   (not-found "Not found"))
+
+(defn wrap-root-to-index
+  [handler]
+  (fn [request]
+    (println "running wrap-root-to-index")
+    (handler (update-in request [:uri]
+               #(do (println %) (if (= "/" %) "/index.html" %))))))
+
+(def app
+  (-> routes
+      (wrap-root-to-index)
+      (wrap-resource "public")
+      (wrap-content-type)
+      (wrap-not-modified)))
 
 ;;;; Server
 
