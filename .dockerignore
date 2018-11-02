@@ -1,0 +1,17 @@
+.dockerignore
+*~
+*#
+.#*
+.git
+.env
+.scrutnizer.yml
+.travis.yml
+.vagrant
+Dockerfile*
+README.md
+circle.yml
+vendor
+buildspec.yml
+target
+profiles.clj
+test
