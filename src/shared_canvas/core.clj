@@ -18,26 +18,44 @@
 (defonce canvas-events (atom []))
 (defonce channels (atom {}))
 
-;;;; Handlers
+;;;; Functionality
 
-(defn broadcast-message
-  [sender-channel message]
-  (println "Received:" message)
-  (println "Sender:" sender-channel)
-  (swap! canvas-events conj (json/read-str message))
+(defn edn->json
+  [edn]
+  (json/write-str edn))
+
+(defn json->edn
+  [json]
+  (json/read-str json))
+
+(defn add-event-to-event-store
+  [event]
+  (swap! canvas-events conj (json->edn event)))
+
+(defn broadcast-event
+  [from-channel event]
   (doseq [channel (keys @channels)]
-    (when-not (= sender-channel channel) 
-      (send! channel message))))
+    (when-not (= from-channel channel)
+      (send! channel event))))
+
+(defn handle-message
+  [from-channel message]
+  (println "Received:" message)
+  (println "Sender:" from-channel)
+  (add-event-to-event-store message)
+  (broadcast-event from-channel message))
+  
+;;;; Handlers
 
 (defn websocket-handler
   [request]
   (with-channel request channel
-    (println "New user connected")
+    (println "New channel connected. Adding to channels vector.")
     (swap! channels assoc channel request)
-    (println "Sending canvas events")
-    (send! channel (json/write-str @canvas-events))
+    (println "Sending canvas events to new channel.")
+    (send! channel (edn->json @canvas-events))
     (on-close channel (fn [status] (swap! channels dissoc channel)))
-    (on-receive channel (fn [message] (broadcast-message channel message)))))
+    (on-receive channel (fn [message] (handle-message channel message)))))
 
 ;;;; Middleware
 
@@ -76,4 +94,4 @@
 (defn -main
   [& args]
   (start-server port)
-  (println "Server running on port 8000"))
+  (println "Server running on port" port))
