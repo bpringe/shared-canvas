@@ -41,8 +41,8 @@
   //// State
 
   let mouseDown = false;
-  let drawWidth = 50;
-  let drawHeight = 50;
+  let drawWidth = 10;
+  let drawHeight = 10;
   let fillStyle = 'rgba(0, 0, 200, 0.5)';
 
   //// Initialize context
