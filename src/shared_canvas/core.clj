@@ -20,12 +20,14 @@
 
 ;;;; Handlers
 
-(defn handle-message
-  [message]
+(defn broadcast-message
+  [sender-channel message]
   (println "Received:" message)
+  (println "Sender:" sender-channel)
   (swap! canvas-events conj (json/read-str message))
   (doseq [channel (keys @channels)]
-    (send! channel message)))
+    (when-not (= sender-channel channel) 
+      (send! channel message))))
 
 (defn websocket-handler
   [request]
@@ -35,7 +37,7 @@
     (println "Sending canvas events")
     (send! channel (json/write-str @canvas-events))
     (on-close channel (fn [status] (swap! channels dissoc channel)))
-    (on-receive channel handle-message)))
+    (on-receive channel (fn [message] (broadcast-message channel message)))))
 
 ;;;; Middleware
 
@@ -48,11 +50,11 @@
 ;;;; Routes
 
 (defroutes routes
-  (GET "/ws" [] websocket-handler)
+  (GET "/ws" [] #'websocket-handler)
   (not-found "Not found"))
 
 (def app
-  (-> routes
+  (-> #'routes
       (wrap-resource "public")
       (wrap-content-type)
       (wrap-not-modified)
