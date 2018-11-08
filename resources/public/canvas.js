@@ -26,7 +26,8 @@
     console.log('Error:', event);
   }
 
-  const websocket = new WebSocket(`ws://${window.location.host}/ws`);
+  const webSocketProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  const websocket = new WebSocket(`${webSocketProtocol}//${window.location.host}/ws`);
   websocket.onopen = onOpen;
   websocket.onclose = onClose;
   websocket.onmessage = onMessage;
