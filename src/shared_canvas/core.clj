@@ -7,7 +7,8 @@
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
-            [environ.core :refer [env]])) 
+            [environ.core :refer [env]])
+  (:import java.net.InetAddress)) 
 
 ;;;; Configuration
 
@@ -69,6 +70,7 @@
 
 (defroutes routes
   (GET "/ws" [] #'websocket-handler)
+  (GET "/hostname" [] (.getHostName (. InetAddress getLocalHost)))
   (not-found "Not found"))
 
 (def app
